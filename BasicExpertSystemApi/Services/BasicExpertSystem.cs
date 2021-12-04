@@ -30,12 +30,12 @@ namespace BasicExpertSystemApi.Services
 				while (!finished)
 				{
 					finished = true;
-					var conditions = query.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(c=>c.Trim());
+					var conditions = query.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(c=>c.Trim()).ToList();
 					for (var i = 0; i < rules.Count; i++)
 					{
 						if (skippedRules.Contains(i)) continue;
 						var rule = rules[i];
-						var premises = rule.Condition.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim());
+						var premises = rule.Condition.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim()).ToList();
 						var intersection = conditions.Intersect(premises);
 						var isPremiseCorrect = premises.All(p => intersection.Contains(p));
 
@@ -44,7 +44,7 @@ namespace BasicExpertSystemApi.Services
 						finished = false;
 						sb.Append(rule.Position + ";" + query.Replace(";", ",") + ";" + rule.Result + "\n");
 						query += "; " + rule.Result;
-						conditions = query.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(c => c.Trim());
+						conditions = query.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(c => c.Trim()).ToList();
 						result = rule.Result;
 					}
 				}
