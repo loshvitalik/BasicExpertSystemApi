@@ -19,9 +19,9 @@ namespace BasicExpertSystemApi.Services
 				var sw = new Stopwatch();
 				sw.Start();
 				var sb = new StringBuilder();
-				sb.Append("Position;Input;Result\n");
+				sb.Append("Position,Input,Result\n");
 				var query = inputText;
-				sb.Append(query + "\n");
+				sb.Append("0," + query + "\n");
 				var result = "";
 				var rules = system.Rules.OrderBy(r => r.Position).ToList();
 				var skippedRules = new List<int>();
@@ -42,7 +42,7 @@ namespace BasicExpertSystemApi.Services
 						if (!isPremiseCorrect) continue;
 						skippedRules.Add(i);
 						finished = false;
-						sb.Append(rule.Position + ";" + query.Replace(";", ",") + ";" + rule.Result + "\n");
+						sb.Append(rule.Position + "," + query + "," + rule.Result + "\n");
 						query += "; " + rule.Result;
 						conditions = query.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(c => c.Trim()).ToList();
 						result = rule.Result;
