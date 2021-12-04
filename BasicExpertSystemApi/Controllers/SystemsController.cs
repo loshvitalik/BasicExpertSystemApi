@@ -42,6 +42,18 @@ namespace BasicExpertSystemApi.Controllers
 			return ResponseMessage(Request.CreateResponse(HttpStatusCode.Created, system));
 		}
 
+		[Route("api/systems/{id}/search")]
+		[HttpGet]
+		public IHttpActionResult Search(Guid id, string input)
+		{
+			var system = context.Systems.Include(s => s.Rules).FirstOrDefault(s => s.Id == id);
+			if (system == null)
+				return ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, new Error("SystemNotFound", $"System with ID {id} was not found")));
+			if (string.IsNullOrEmpty(input))
+				return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, new Error("CheckRequiredParameters", $"Input text must not be empty!")));
+			return Ok(BasicExpertSystem.RunSearch(context, system, input));
+		}
+
 		[Route("api/systems")]
 		[HttpPatch]
 		public IHttpActionResult Patch([FromBody] Models.System newSystem)
@@ -78,18 +90,6 @@ namespace BasicExpertSystemApi.Controllers
 			context.Systems.Remove(system);
 			context.SaveChanges();
 			return Ok();
-		}
-
-		[Route("api/systems/{id}/search")]
-		[HttpGet]
-		public IHttpActionResult Search(Guid id, string input)
-		{
-			var system = context.Systems.Include(s => s.Rules).FirstOrDefault(s => s.Id == id);
-			if (system == null)
-				return ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, new Error("SystemNotFound", $"System with ID {id} was not found")));
-			if (string.IsNullOrEmpty(input))
-				return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, new Error("CheckRequiredParameters", $"Input text must not be empty!")));
-			return Ok(BasicExpertSystem.RunSearch(context, system, input));
 		}
 	}
 }

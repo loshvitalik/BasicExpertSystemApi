@@ -19,13 +19,14 @@ namespace BasicExpertSystemApi.Services
 				var sw = new Stopwatch();
 				sw.Start();
 				var sb = new StringBuilder();
-				sb.Append("Position,Input,Result\n");
+				sb.Append("Pass,Position,Input,Result\n");
 				var query = inputText;
-				sb.Append("0," + query + "\n");
+				sb.Append("0,0," + query + "\n");
 				var result = "";
 				var rules = system.Rules.OrderBy(r => r.Position).ToList();
 				var skippedRules = new List<int>();
 				var finished = false;
+				var passNumber = 1;
 
 				while (!finished)
 				{
@@ -42,11 +43,13 @@ namespace BasicExpertSystemApi.Services
 						if (!isPremiseCorrect) continue;
 						skippedRules.Add(i);
 						finished = false;
-						sb.Append(rule.Position + "," + query + "," + rule.Result + "\n");
+						sb.Append(passNumber + "," + rule.Position + "," + query + "," + rule.Result + "\n");
 						query += "; " + rule.Result;
 						conditions = query.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(c => c.Trim()).ToList();
 						result = rule.Result;
 					}
+
+					passNumber++;
 				}
 
 				var log = sb.ToString();
