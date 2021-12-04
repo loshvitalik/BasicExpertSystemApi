@@ -30,12 +30,12 @@ namespace BasicExpertSystemApi.Services
 				while (!finished)
 				{
 					finished = true;
-					var conditions = query.Split(new[] {"; "}, StringSplitOptions.RemoveEmptyEntries);
+					var conditions = query.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(c=>c.Trim());
 					for (var i = 0; i < rules.Count; i++)
 					{
 						if (skippedRules.Contains(i)) continue;
 						var rule = rules[i];
-						var premises = rule.Condition.Split(new[] {"; "}, StringSplitOptions.RemoveEmptyEntries);
+						var premises = rule.Condition.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim());
 						var intersection = conditions.Intersect(premises);
 						var isPremiseCorrect = premises.All(p => intersection.Contains(p));
 
@@ -44,7 +44,7 @@ namespace BasicExpertSystemApi.Services
 						finished = false;
 						sb.Append(rule.Position + ";" + query.Replace(";", ",") + ";" + rule.Result + "\n");
 						query += "; " + rule.Result;
-						conditions = query.Split(new[] {"; "}, StringSplitOptions.RemoveEmptyEntries);
+						conditions = query.Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(c => c.Trim());
 						result = rule.Result;
 					}
 				}
@@ -54,7 +54,7 @@ namespace BasicExpertSystemApi.Services
 				var logEntity = new ExpertSystemLog(system, sw.ElapsedMilliseconds, inputText, result, log);
 				context.Logs.Add(logEntity);
 				context.SaveChanges();
-				return new Result(system.Id, true, result, log);
+				return new Result(system.Id, result.Length != 0, result, log);
 			}
 			catch (Exception e)
 			{
