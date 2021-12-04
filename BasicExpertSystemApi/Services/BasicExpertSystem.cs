@@ -38,6 +38,7 @@ namespace BasicExpertSystemApi.Services
 						var premises = rule.Condition.Split(new[] {"; "}, StringSplitOptions.RemoveEmptyEntries);
 						var intersection = conditions.Intersect(premises);
 						var isPremiseCorrect = premises.All(p => intersection.Contains(p));
+
 						if (!isPremiseCorrect) continue;
 						skippedRules.Add(i);
 						finished = false;

@@ -35,16 +35,23 @@ namespace BasicExpertSystemApi.Controllers
 		[HttpPost]
 		public IHttpActionResult Post([FromBody] Models.System system)
 		{
-			if (system.Id == Guid.Empty || string.IsNullOrEmpty(system.Name))
-				return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, new Error("CheckRequiredParameters", $"System ID and Name must not be empty!")));
+			if (system.Id == Guid.Empty)
+				return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, new Error("CheckRequiredParameters", "System ID must not be empty!")));
 			context.Systems.Add(system);
 			context.SaveChanges();
 			return ResponseMessage(Request.CreateResponse(HttpStatusCode.Created, system));
 		}
 
+		[Route("api/systems")]
+		[HttpPatch]
+		public IHttpActionResult Patch([FromBody] Models.System newSystem)
+		{
+			return PatchById(newSystem.Id, newSystem);
+		}
+
 		[Route("api/systems/{id}")]
 		[HttpPatch]
-		public IHttpActionResult Patch(Guid id, [FromBody] Models.System newSystem)
+		public IHttpActionResult PatchById(Guid id, [FromBody] Models.System newSystem)
 		{
 			var system = context.Systems.Include(s => s.Rules).FirstOrDefault(s => s.Id == id);
 			if (system == null)
